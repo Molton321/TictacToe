@@ -22,7 +22,7 @@ class Tree(node.Node):
         Crea el arbol con el nodo raiz
     """
 
-    def __init__(self, player: str = 'X', status: list = [["X", "O", "X"], [0, 0, "O"], ["O", "X", 0]]):
+    def __init__(self, player: str = 'X', status: list = [[0, "O", "X"], [0, 0, "O"], ["O", "X", 0]]):
         super().__init__(player, status)
         self.root = self
         self.node_count = 1
@@ -82,7 +82,7 @@ class Tree(node.Node):
 
         return adjacent_cells
     
-        """Determina si el juego ha terminado o no"""
+    """Determina si el juego ha terminado o no"""
     
     def game_over(self, node: node):
         
@@ -93,28 +93,12 @@ class Tree(node.Node):
             else:
                 node.score = 10
         elif node.children == []:
-            node.fin = True
             node.leaf = True
-
-
-    """Propaga los scores desde las hojas hasta la raiz
-    """
-    def minimax(self, node):
-            if node.fin :
-                return node.score
-            
-            scores = []
-            for child in node.children:
-                score = self.minimax(child)
-                scores.append(score)
-
-            if node.player != self.root.player:  # Si es el turno del jugador actual
-                node.score = max(scores)  # Seleccionar el mejor puntaje
+            if node.player == self.root.player:
+                node.score = -10
             else:
-                node.score = min(scores)  # Seleccionar el peor puntaje para el oponente
+                node.score = 10
 
-            return node.score
-        
     """retorna si el juego ha terminado o no"""
     def is_end(self, status):
         for i in range(3):
@@ -129,7 +113,7 @@ class Tree(node.Node):
                     return True
                 else:
                     return False
-            
+                
     def safe_win(self, node: node):
         victories = 0
         for child in node.children:
@@ -142,7 +126,7 @@ class Tree(node.Node):
                 node.score = 10
             else:
                 node.score = -10
-    
+                
     """ Crea el arbol a partir de un nodo
     
     Keyword arguments:
@@ -161,6 +145,24 @@ class Tree(node.Node):
         self.game_over(father)
         self.safe_win(father)
 
+    
+                
+    """Propaga los scores desde las hojas hasta la raiz"""
+    def minimax(self, node):
+            if node.fin :
+                return node.score
+            
+            scores = []
+            for child in node.children:
+                score = self.minimax(child)
+                scores.append(score)
+
+            if node.player != self.root.player:  # Si es el turno del jugador actual
+                node.score = max(scores)  # Seleccionar el mejor puntaje
+            else:
+                node.score = min(scores)  # Seleccionar el peor puntaje para el oponente
+
+            return node.score
     
     """convierte un archivo json a un arbol
     Keyword arguments:
